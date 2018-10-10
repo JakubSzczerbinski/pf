@@ -12,7 +12,7 @@ let time f x =
 (* ZAD 1 *)
 
 let exp1 = fun x -> x * 1;;
-let exp2 a = x;;
+let exp2 a = failwith "failed";;
 let exp3 a b c = a (b c);;
 
 (* ZAD 2 *)
@@ -33,6 +33,9 @@ let a_2 n = a_2_ n 0 0;;
 (* ZAD 3 *)
 
 let composition g f = fun x -> f (g x);;
+let rec iter f n = if n = 0 then fun x -> x else composition f (iter f (n-1));;
+let mult a b = iter ((+) a) b 0;;
+let power a b = iter (( * )a ) b 1;;
 
 (* ZAD 4 *)
 let hd stream = stream 0;;
@@ -62,6 +65,7 @@ let cfalse t f = f;;
 
 let cand lhs rhs t f = rhs (lhs t f) f;;
 let cor lhs rhs t f = rhs t (lhs t f);;
+let neg cbool t f = cbool f t;;
 
 let c_bool_of_bool boolean t f = 
   if boolean then t else f;;
@@ -77,5 +81,7 @@ let succ number inc zero_el = inc (number inc zero_el);;
 let add lhs rhs inc zero_el = lhs inc (rhs inc zero_el);;
 let mul lhs rhs inc zero_el = lhs (rhs inc) zero_el;;
 
-let rec cnum_of_int num inc zero_el = if num == 0 then zero_el else inc (cnum_of_int (num - 1) inc zero_el);;
+let isEven num = num neg ctrue;;
+let isZero num t f = num (fun x -> f) t;;
+let cnum_of_int = iter;;
 let int_of_cnum cnum = cnum (fun x -> x + 1) 0;;
