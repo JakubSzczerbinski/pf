@@ -1,10 +1,10 @@
 
 (* ZAD 1 *)
 
-let rec append_to_all el lists =
+let rec append_to_all el lists acc =
   match lists with
-  | [] -> []
-  | hd :: tl -> (el :: hd)::(append_to_all el tl);;
+  | [] -> acc
+  | hd :: tl -> append_to_all el tl ((el::hd)::acc);;
 
 let rec concat l1 l2 =
   match l1 with
@@ -14,7 +14,7 @@ let rec concat l1 l2 =
 let rec sublists list = 
   match list with
   | [] -> [[]]
-  | hd :: tl -> let subs = sublists tl in concat subs (append_to_all hd subs);;
+  | hd :: tl -> let subs = sublists tl in append_to_all hd subs subs;;
 
 (* ZAD 2 *)
 

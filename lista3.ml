@@ -57,11 +57,11 @@ let rec poly_a l x =
 
 let rec poly_b l x = fold_right (fun a num -> a +. num *. x) l 0.0;;
 
-(* let rec poly_c l x =
-  let rec aux l =
+let rec poly_c l x =
+  let rec aux l res =
     match l with
-    | [] -> 0
-    | b::bs -> *)
+    | [] -> res
+    | b::bs -> pol
 
 (* ZAD 6 *)
 
