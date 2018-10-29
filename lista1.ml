@@ -83,5 +83,5 @@ let mul lhs rhs inc zero_el = lhs (rhs inc) zero_el;;
 
 let isEven num = num neg ctrue;;
 let isZero num t f = num (fun x -> f) t;;
-let cnum_of_int = iter;;
+let cnum_of_int n f z = iter f n z ;;
 let int_of_cnum cnum = cnum (fun x -> x + 1) 0;;
