@@ -65,7 +65,6 @@ let rec poly_c l x =
   in aux l 0.0;;
 
 let rec poly_d l x = fold_left (fun num a -> a +. num *. x) 0.0 (rev l);;
-
 (* ZAD 6 *)
 
 let ins_everywhere_all_left l x = fold_left (fun res a -> append (ins_everywhere_left a x) res) [] l;;
