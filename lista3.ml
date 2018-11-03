@@ -57,11 +57,14 @@ let rec poly_a l x =
 
 let rec poly_b l x = fold_right (fun a num -> a +. num *. x) l 0.0;;
 
-(* let rec poly_c l x =
-  let rec aux l =
+let rec poly_c l x =
+  let rec aux l res =
     match l with
-    | [] -> 0
-    | b::bs -> *)
+    | [] -> res
+    | b::bs -> aux bs (res *. x +. b)
+  in aux l 0.0;;
+
+let rec poly_d l x = fold_left (fun num a -> a +. num *. x) 0.0 (rev l);;
 
 (* ZAD 6 *)
 
@@ -100,16 +103,53 @@ let mtx_elem mtx i j = row_elem (mtx_row mtx i) j;;
 
 (* ZAD 10 *)
 
-let rec zip a b = 
-  match (a, b) with
-  | ([], _) -> []
-  | (_, []) -> []
-  | (x::xs, y::ys) -> (x, y)::(zip xs ys);;
-
 let rec transpose mtx = 
   match mtx with
   | [] -> []
   | [x] -> map (fun el -> [el]) x
-  | x::xs -> map (fun (el, row) -> el::row) (zip x (transpose xs));;
+  | x::xs -> map (fun (el, row) -> el::row) (combine x (transpose xs));;
 
+(* ZAD 11 *)
+
+let mtx_add = map2 (map2 ( +. ));;
+
+(* ZAD 12 *)
+
+let scalar_prod a b = fold_left ( +. ) 0.0 (map (fun (ela, elb) -> ela *. elb) (combine a b));;
+
+(* ZAD 13 *)
+
+let mtx_apply mtx vec = map (scalar_prod vec) mtx;;
+let mtx_mul m1 m2 = transpose (map (mtx_apply m1) (transpose m2));;
+
+(* ZAD 14 *)
+
+let rec powers_of_minus_one n =
+  let rec aux i =
+    if i < n then
+      let power = if i mod 2 = 0 then 1.0 else -1.0 
+      in power::(aux (i + 1))
+    else []
+  in aux 0;;
+
+let rec drop_each mtx =
+  match mtx with
+  | [] -> []
+  | x::xs -> xs::(map (fun a -> (x::a)) (aux xs));;
+
+let rec drop n l =
+  if n <= 0 
+  then l
+  else match l with
+  | [] -> failwith "Cant drop more elements than on the list"
+  | x::xs -> drop (n-1) xs;;
+
+let rec det mtx =
+  match mtx with
+  | [[x]] -> x
+  | _ ->
+    let dets = map det (drop_each (map (drop 1) mtx)) in
+    let summands = map2 ( *. ) dets (mtx_column mtx 0) in
+    let pows = powers_of_minus_one (length summands) 
+    in scalar_prod summands pows;;
 
