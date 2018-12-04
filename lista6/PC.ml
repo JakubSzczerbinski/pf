@@ -25,7 +25,7 @@ let rec prove_pt pt env =
   | Ax prop -> 
       if List.mem prop env
       then prop
-      else failwith "Failed to prove"
+      else failwith ("Bad axiom " ^ string_of_prop prop)
   | DisjIL (tree, prop) -> 
       let tree_prop = prove_pt tree env in
       Disj (tree_prop, prop)
@@ -34,14 +34,19 @@ let rec prove_pt pt env =
       Disj (prop, tree_prop)
   | ImplI (prop, tree) -> 
       Impl(prop, prove_pt tree (prop::env))
-  | BotE prop -> prop
+  | BotE prop -> 
+      if List.mem Bot env then
+        prop
+      else
+        failwith ("BotE not possible False axiom not in frame")
   | DisjE (tree, (prop1, tree1), (prop2, tree2)) ->
       let tree_prop = prove_pt tree env in
       let tree1_prop = prove_pt tree1 (prop1::env) in
       let tree2_prop = prove_pt tree2 (prop2::env) in
       if tree_prop = prop1 && tree_prop = prop2 && tree1_prop = tree2_prop
       then tree1_prop
-      else failwith "Failed to prove"
+      else failwith ("Failed to prove disjunction elimination" ^ (string_of_prop tree_prop) ^ ", "
+        ^ (string_of_prop tree1_prop) ^ ", " ^ (string_of_prop tree2_prop) ^ ".")
   | ConjEL tree -> 
       begin match prove_pt tree env with
       | Conj (res, _) -> res
@@ -94,6 +99,8 @@ and prove_ps ps env =
     | (Impl _) as impl -> List.mem impl env
     | _ -> false
     end
+  ||
+    List.mem prop env
   ||
     List.exists find_conjunction env
   ||
