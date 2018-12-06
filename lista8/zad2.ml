@@ -53,7 +53,7 @@ sig
         module V : VERTEX
         type vertex = V.t
 
-        module E : EDGE with type vertex = vertex
+        module E : EDGE with type vertex = V.t
         type edge = E.t
         val mem_v : t -> vertex -> bool
         val mem_e : t -> edge -> bool
@@ -74,10 +74,10 @@ sig
         val fold_e : ( edge -> 'a -> 'a ) -> t -> 'a -> 'a
 end
 
-module Graph : GRAPH =
+module Graph (V : VERTEX) (E : EDGE with type vertex = V.t) : GRAPH with module V = V and module E = E and type vertex = V.t and type edge = E.t =
 struct
-        module V = Vertex
-        module E = Edge
+        module V = V
+        module E = E 
         type vertex = V.t
         type edge = E.t
         type t = Graph of edge list * vertex list
@@ -129,3 +129,14 @@ struct
         let fold_v f (Graph (es, vs)) a = List.fold_right f vs a
         let fold_e f (Graph (es, vs)) a = List.fold_right f es a
 end
+
+module Graphi = Graph (Vertex) (Edge)
+
+let dfs 
+  (type s)
+  (module G : GRAPH with type V.t = s)
+  g v =
+  let rec aux v visited =
+    let to_visit = List.filter (fun v -> not (List.mem v visited)) (G.succ g v)
+    in List.fold_right aux to_visit (v::visited)
+  in aux v [];;

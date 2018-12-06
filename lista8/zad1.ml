@@ -59,10 +59,11 @@ end
 
 module IntQ = PQueue(IntOrd)
 
-let sort l = 
+let sort (type s) (module Ord : ORDTYPE with type t = s) l =
+        let module Q = PQueue(Ord) in
         let rec aux l q =
                 match l with
-                | x::xs -> let res, q = aux xs (IntQ.insert q x ()) in let p, (), _q = IntQ.remove q in p::res, _q
+                | x::xs -> let res, q = aux xs (Q.insert q x ()) in let p, (), _q = Q.remove q in p::res, _q
                 | [] -> [], q
-        in fst (aux l IntQ.empty);;
+        in fst (aux l Q.empty);;
 
